@@ -1,72 +1,176 @@
 #include <iostream>
+#include <string>
+
 using namespace std;
 
-// Define the structure for a node in the linked list
+// Define a struct for the node of the linked list
 struct Node {
-    int data;       // Data stored in the node
-    Node* next;     // Pointer to the next node in the list
+    string prn;
+    string name;
+    Node* next;
 };
 
-// Function to print the linked list
-void printList(Node* head) {
-    Node* current = head;
-    while (current != nullptr) {
-        cout << current->data << " ";
-        current = current->next;
-    }
-    cout << endl;
-}
+// Class to manage the linked list
+class PinnacleClub {
+private:
+    Node* head;
+    Node* tail;
 
-// Function to delete the linked list and free memory
-void deleteList(Node* head) {
-    Node* current = head;
-    Node* nextNode;
-    while (current != nullptr) {
-        nextNode = current->next;
-        delete current;
-        current = nextNode;
-    }
-}
-
-int main() {
-    int n;
-
-    cout << "Linked List Tutorial" << endl;
-    cout << "Enter the number of nodes you want to create: ";
-    cin >> n;
-
-    if (n <= 0) {
-        cout << "The number of nodes must be positive." << endl;
-        return 1; // Exit with an error code
+    // Helper function to delete the entire list
+    void deleteList(Node*& node) {
+        if (node == nullptr) return;
+        deleteList(node->next);
+        delete node;
+        node = nullptr;
     }
 
-    Node* head = nullptr;
-    Node* temp = nullptr;
-    
-    for (int i = 0; i < n; i++) {
-        int value;
-        cout << "Enter value for node " << (i + 1) << ": ";
-        cin >> value;
+    // Recursive function to display list in reverse order
+    void displayReverse(Node* node) const {
+        if (node == nullptr) return;
+        displayReverse(node->next);
+        cout << "PRN: " << node->prn << ", Name: " << node->name << endl;
+    }
 
-        Node* newNode = new Node; // Allocate memory for a new node
-        newNode->data = value;    // Set the data for the new node
-        newNode->next = nullptr;  // Initialize the next pointer to null
+public:
+    PinnacleClub() : head(nullptr), tail(nullptr) {}
 
+    ~PinnacleClub() {
+        deleteList(head);
+    }
+
+    // Add a new member
+    void addMember(const string& prn, const string& name) {
+        Node* newNode = new Node{prn, name, nullptr};
         if (head == nullptr) {
-            head = newNode; // The first node becomes the head
-            temp = head;    // Temp points to the head node
+            head = newNode;
+            tail = newNode;
         } else {
-            temp->next = newNode; // Link the new node to the end of the list
-            temp = newNode;       // Move temp to the new node
+            tail->next = newNode;
+            tail = newNode;
         }
     }
 
-    // Print the linked list
-    cout << "Linked list: ";
-    printList(head);
+    // Add a president (at the beginning of the list)
+    void addPresident(const string& prn, const string& name) {
+        Node* newNode = new Node{prn, name, head};
+        head = newNode;
+        if (tail == nullptr) {
+            tail = newNode;
+        }
+    }
 
-    // Clean up memory
-    deleteList(head);
+    // Add a secretary (at the end of the list)
+    void addSecretary(const string& prn, const string& name) {
+        Node* newNode = new Node{prn, name, nullptr};
+        if (tail == nullptr) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+
+    // Delete a member by PRN
+    void deleteMember(const string& prn) {
+        Node* current = head;
+        Node* prev = nullptr;
+        while (current != nullptr && current->prn != prn) {
+            prev = current;
+            current = current->next;
+        }
+        if (current == nullptr) return; // PRN not found
+
+        if (prev == nullptr) {
+            head = current->next;
+            if (head == nullptr) {
+                tail = nullptr;
+            }
+        } else {
+            prev->next = current->next;
+            if (current->next == nullptr) {
+                tail = prev;
+            }
+        }
+        delete current;
+    }
+
+    // Compute total number of members
+    int countMembers() const {
+        int count = 0;
+        Node* current = head;
+        while (current != nullptr) {
+            count++;
+            current = current->next;
+        }
+        return count;
+    }
+
+    // Display all members
+    void displayMembers() const {
+        Node* current = head;
+        while (current != nullptr) {
+            cout << "PRN: " << current->prn << ", Name: " << current->name << endl;
+            current = current->next;
+        }
+    }
+
+    // Display list in reverse order
+    void displayReverse() const {
+        displayReverse(head);
+    }
+
+    // Concatenate two linked lists
+    void concatenate(PinnacleClub& other) {
+        if (tail != nullptr) {
+            tail->next = other.head;
+            if (other.tail != nullptr) {
+                tail = other.tail;
+            }
+        } else {
+            head = other.head;
+            tail = other.tail;
+        }
+        other.head = nullptr;
+        other.tail = nullptr;
+    }
+};
+
+int main() {
+    PinnacleClub divisionA;
+    PinnacleClub divisionB;
+
+    // Adding members to Division A
+    divisionA.addPresident("A001", "Alice");
+    divisionA.addMember("A002", "Bob");
+    divisionA.addSecretary("A003", "Charlie");
+
+    // Adding members to Division B
+    divisionB.addPresident("B001", "David");
+    divisionB.addMember("B002", "Eve");
+    divisionB.addSecretary("B003", "Frank");
+
+    // Display members of Division A
+    cout << "Division A Members:" << endl;
+    divisionA.displayMembers();
+    cout << "Reverse Order of Division A Members:" << endl;
+    divisionA.displayReverse();
+
+    // Display members of Division B
+    cout << "Division B Members:" << endl;
+    divisionB.displayMembers();
+    cout << "Reverse Order of Division B Members:" << endl;
+    divisionB.displayReverse();
+
+    // Concatenate Division B to Division A
+    divisionA.concatenate(divisionB);
+
+    // Display members of Division A after concatenation
+    cout << "Division A Members after concatenation with Division B:" << endl;
+    divisionA.displayMembers();
+
+    // Display the total number of members in Division A
+    cout << "Total members in Division A after concatenation: " << divisionA.countMembers() << endl;
 
     return 0;
 }
