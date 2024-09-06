@@ -139,38 +139,81 @@ public:
 int main() {
     PinnacleClub divisionA;
     PinnacleClub divisionB;
+    int choice;
+    string prn, name;
 
-    // Adding members to Division A
-    divisionA.addPresident("A001", "Alice");
-    divisionA.addMember("A002", "Bob");
-    divisionA.addSecretary("A003", "Charlie");
+    do {
+        cout << "\nPinnacle Club Menu\n";
+        cout << "1. Add President to Division A\n";
+        cout << "2. Add Member to Division A\n";
+        cout << "3. Add Secretary to Division A\n";
+        cout << "4. Display Members of Division A\n";
+        cout << "5. Display Members of Division A in Reverse Order\n";
+        cout << "6. Delete Member from Division A\n";
+        cout << "7. Add President to Division B\n";
+        cout << "8. Add Member to Division B\n";
+        cout << "9. Add Secretary to Division B\n";
+        cout << "10. Display Members of Division B\n";
+        cout << "11. Display Members of Division B in Reverse Order\n";
+        cout << "12. Concatenate Division B to Division A\n";
+        cout << "13. Display Total Members in Division A\n";
+        cout << "14. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore(); // To ignore any leftover newline character in the input buffer
 
-    // Adding members to Division B
-    divisionB.addPresident("B001", "David");
-    divisionB.addMember("B002", "Eve");
-    divisionB.addSecretary("B003", "Frank");
-
-    // Display members of Division A
-    cout << "Division A Members:" << endl;
-    divisionA.displayMembers();
-    cout << "Reverse Order of Division A Members:" << endl;
-    divisionA.displayReverse();
-
-    // Display members of Division B
-    cout << "Division B Members:" << endl;
-    divisionB.displayMembers();
-    cout << "Reverse Order of Division B Members:" << endl;
-    divisionB.displayReverse();
-
-    // Concatenate Division B to Division A
-    divisionA.concatenate(divisionB);
-
-    // Display members of Division A after concatenation
-    cout << "Division A Members after concatenation with Division B:" << endl;
-    divisionA.displayMembers();
-
-    // Display the total number of members in Division A
-    cout << "Total members in Division A after concatenation: " << divisionA.countMembers() << endl;
-
-    return 0;
-}
+        switch (choice) {
+            case 1:
+                cout << "Enter PRN for President: ";
+                getline(cin, prn);
+                cout << "Enter Name for President: ";
+                getline(cin, name);
+                divisionA.addPresident(prn, name);
+                break;
+            case 2:
+                cout << "Enter PRN for Member: ";
+                getline(cin, prn);
+                cout << "Enter Name for Member: ";
+                getline(cin, name);
+                divisionA.addMember(prn, name);
+                break;
+            case 3:
+                cout << "Enter PRN for Secretary: ";
+                getline(cin, prn);
+                cout << "Enter Name for Secretary: ";
+                getline(cin, name);
+                divisionA.addSecretary(prn, name);
+                break;
+            case 4:
+                cout << "Members of Division A:\n";
+                divisionA.displayMembers();
+                break;
+            case 5:
+                cout << "Members of Division A in Reverse Order:\n";
+                divisionA.displayReverse();
+                break;
+            case 6:
+                cout << "Enter PRN to delete from Division A: ";
+                getline(cin, prn);
+                divisionA.deleteMember(prn);
+                break;
+            case 7:
+                cout << "Enter PRN for President in Division B: ";
+                getline(cin, prn);
+                cout << "Enter Name for President in Division B: ";
+                getline(cin, name);
+                divisionB.addPresident(prn, name);
+                break;
+            case 8:
+                cout << "Enter PRN for Member in Division B: ";
+                getline(cin, prn);
+                cout << "Enter Name for Member in Division B: ";
+                getline(cin, name);
+                divisionB.addMember(prn, name);
+                break;
+            case 9:
+                cout << "Enter PRN for Secretary in Division B: ";
+                getline(cin, prn);
+                cout << "Enter Name for Secretary in Division B: ";
+                getline(cin, name);
+                divisionB
