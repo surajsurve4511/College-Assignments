@@ -66,4 +66,26 @@ int main(){
         p[i]=Process();
         p[i].getData();
     }
-    sor
+    sort(p,n);
+    Calculate(p,n);
+    
+    cout<<"pid\t"<<"bt\t"<<"tat\t"<<"wt\t"<<"priority\t"<<endl;
+    
+    for(int i = 0;i<n;i++){
+        cout<<p[i].pid<<"\t"<<p[i].bt<<"\t"<<p[i].tat<<"\t"<<p[i].wt<<"\t"<<p[i].priority<<endl;
+    
+    }
+
+    int tsum=0;
+    int wtsum=0;
+
+    for(int i=0;i<n;i++){
+        tsum = tsum+p[i].tat;
+        wtsum = wtsum+p[i].wt;
+    }
+
+    cout<<"Total turn around time : "<<tsum<<endl;
+    cout<<"Total waiting time : "<<wtsum<<endl;
+
+    return 0;
+}
