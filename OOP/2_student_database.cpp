@@ -6,119 +6,148 @@ suitable member functions. Make use of constructor, default constructor, copy co
 destructor, static member functions, friend class, this pointer, inline code and dynamic memory
 allocation operators-new and delete as well as exception handling*/
 
+#include <iostream>
+#include <cstring>
+#include <stdexcept>
 
-
-#include<iostream>
-#include<string>
 using namespace std;
 
-class Student
-{
- private:
- int rollno;
- string mobileno;
- int lino;
- string name;
- string bloodgrp;
- string address;
- int class_;
- string div ;
- string dob ;
- static count ;
- public:
-  void getdata()
-  {
-    cout << "Enter the name of student: ";
-    getline(cin, name);  // Use getline to read full name with spaces
-    cout << "Enter roll number: ";
-    cin >> rollno;
-    cout << "Enter class: ";
-    cin >> class_;
-    cout << "Enter division: ";
-    cin >> div;
-    cout << "Enter date of birth: ";
-    cin >> dob;
-    cout << "Enter mobile number: ";
-    cin >> mobileno;
-    cout << "Enter address: ";
-    getline(cin, address);
-    cout << "Enter blood group: ";
-    cin >> bloodgrp;
-    cout << "Enter driving license number: ";
-    cin >> lino;
-  }
-  
-  void showdata()
-  {
-    cout << "Name: " << name << endl
-         << "Roll Number: " << rollno << endl
-         << "Class: " << class_ << endl
-         << "Division: " << div << endl
-         << "Date of Birth: " << dob << endl
-         << "Mobile Number: " << mobileno << endl
-         << "Address: " << address << endl
-         << "Blood Group: " << bloodgrp << endl
-         << "Driving License Number: " << lino << endl;
-  }
+// Forward declaration of Friend class
+class Student;
 
+// Address class to store contact information
+class Address {
+private:
+    string contactAddress;
+    string phoneNumber;
+    string drivingLicenseNo;
 
-      // Default constructor
-    Student();
+public:
+    Address() : contactAddress("Unknown"), phoneNumber("Unknown"), drivingLicenseNo("Unknown") {}
 
-    // Parameterized constructor
-    Student(int rollno, const string& name, const string& mobileno, int lino,
-            const string& bloodgrp, const string& address, int class_, const string& div, const string& dob);
+    Address(string addr, string phone, string license) 
+        : contactAddress(addr), phoneNumber(phone), drivingLicenseNo(license) {}
 
-    // Copy constructor
-    Student(const Student& other);
+    // Friend class declaration
+    friend class Student;
 
-    // Destructor
-    ~Student();
-
+    void display() const {
+        cout << "Address: " << contactAddress << "\nPhone: " << phoneNumber << "\nDriving License: " << drivingLicenseNo << endl;
+    }
 };
 
-// Implementations of Student class
-Student::Student() : rollno(0), mobileno("0000000000"), lino(0),
-    name(""), bloodgrp("INVALID"), address("INVALID"), class_(0), div("INVALID"), dob("INVALID") {}
+// Student class definition
+class Student {
+private:
+    string name;
+    int rollNumber;
+    string studentClass;
+    char division;
+    string dob;
+    string bloodGroup;
+    Address* address; // dynamically allocated
+    static int studentCount;
 
-Student::Student(int rollno, const string& name, const string& mobileno, int lino,
-                 const string& bloodgrp, const string& address, int class_, const string& div, const string& dob)
-    : rollno(rollno), mobileno(mobileno), lino(lino), name(name), bloodgrp(bloodgrp),
-      address(address), class_(class_), div(div), dob(dob) {}
+public:
+    // Default constructor
+    Student() : name("Unknown"), rollNumber(0), studentClass("Unknown"), division('X'), dob("Unknown"), bloodGroup("Unknown") {
+        address = new Address();
+        studentCount++;
+    }
 
-Student::Student(const Student& other) : rollno(other.rollno), mobileno(other.mobileno), lino(other.lino),
-    name(other.name), bloodgrp(other.bloodgrp), address(other.address), class_(other.class_),
-    div(other.div), dob(other.dob) {}
+    // Parameterized constructor
+    Student(string n, int roll, string cls, char div, string d, string blood, string addr, string phone, string license) 
+        : name(n), rollNumber(roll), studentClass(cls), division(div), dob(d), bloodGroup(blood) {
+        address = new Address(addr, phone, license);
+        studentCount++;
+    }
 
-Student::~Student() {
-    // Destructor logic if needed
+    // Copy constructor
+    Student(const Student& other) {
+        name = other.name;
+        rollNumber = other.rollNumber;
+        studentClass = other.studentClass;
+        division = other.division;
+        dob = other.dob;
+        bloodGroup = other.bloodGroup;
+        address = new Address(*other.address); // deep copy
+        studentCount++;
+    }
+
+    // Destructor
+    ~Student() {
+        delete address;
+        studentCount--;
+    }
+
+    // Static member function to get student count
+    static int getStudentCount() {
+        return studentCount;
+    }
+
+    // Inline function to display student info
+    inline void display() const {
+        cout << "Name: " << name << "\nRoll Number: " << rollNumber << "\nClass: " << studentClass << "\nDivision: " << division
+             << "\nDOB: " << dob << "\nBlood Group: " << bloodGroup << endl;
+        address->display();
+    }
+
+    // Dynamic memory allocation 
+    void setDynamicDetails() {
+ 
+            string addr, phone, license;
+            cout << "Enter Address: ";
+            getline(cin, addr);
+            cout << "Enter Phone Number: ";
+            getline(cin, phone);
+            cout << "Enter Driving License Number: ";
+            getline(cin, license);
+
+            address = new Address(addr, phone, license);  
+        
+    }
+
+    // Friend function to access private members
+    friend void displayFriend(const Student&);
+
+    // 'this' pointer demonstration
+    Student& setRollNumber(int roll) {
+        this->rollNumber = roll;
+        return *this; // returns reference to current object
+    }
+};
+
+// Static member initialization
+int Student::studentCount = 0;
+
+// Friend function definition
+void displayFriend(const Student& s) {
+    cout << "Friend accessing private data of Student:\n";
+    cout << "Name: " << s.name << "\nRoll Number: " << s.rollNumber << "\nClass: " << s.studentClass << endl;
 }
 
+int main() {
+    // Using parameterized constructor
+    Student s1("John", 101, "12th", 'A', "01/01/2004", "O+", "123 Street", "1234567890", "DL12345");
+    s1.display();
+    
+    // Using default constructor and setting dynamic details
+    Student s2;
+    s2.setDynamicDetails();
+    s2.display();
 
+    // Using copy constructor
+    Student s3(s1);
+    s3.display();
 
-//constructor, default constructor, copy constructor,destructor, static member functions, friend class, this pointer, inline code and dynamic memory
-//allocation operators-new and delete as well as exception handling.
+    // Static member function usage
+    cout << "Total Students: " << Student::getStudentCount() << endl;
 
+    // Demonstrating 'this' pointer
+    s2.setRollNumber(102).display();
 
-
-
-int main()
-{
-    int n;  
-    cout<<"Enter number of students";
-    cin >>n;
-    Student s1[n];
-    for (int i=0;i<n;i++)
-    {
-       s1[i].getdata();
-    }
-    for (int i=0;i<n;i++)
-    {
-       s1[i].showdata();
-    }
-    Student s2.();
-    Student s3.(15,abc);
-    Student s4.
+    // Friend function access
+    displayFriend(s1);
 
     return 0;
 }
